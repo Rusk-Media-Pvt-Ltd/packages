@@ -15,8 +15,6 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.Surface
 import android.view.TextureView
-import android.view.View.MeasureSpec
-import android.widget.FrameLayout
 
 /**
  * Custom TextureView-backed video player view for IMA SDK integration in Flutter.
@@ -28,9 +26,7 @@ class TextureVideoView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), TextureView.SurfaceTextureListener {
-
-    private val textureView: TextureView = TextureView(context)
+) : TextureView(context, attrs, defStyleAttr), TextureView.SurfaceTextureListener {
     private var mediaPlayer: MediaPlayer? = null
     private var surface: Surface? = null
 
@@ -39,19 +35,6 @@ class TextureVideoView @JvmOverloads constructor(
     private var isSurfaceReady = false
     private var currentState = STATE_IDLE
 
-    // The plugin adds this view to its FrameLayout container with NO layout
-    // params, exactly as it did for android.widget.VideoView before it — so
-    // that container was relying on VideoView's own onMeasure to shrink to the
-    // creative's aspect ratio and land pinned top-left (Android's default
-    // FrameLayout child gravity) whenever the creative's aspect doesn't match
-    // the box it's handed. A plain TextureView has no such behavior — it just
-    // stretches to fill MATCH_PARENT — which would visibly distort any
-    // mismatched-aspect creative (see ad_video_item.dart's own sizing-math
-    // comments, which depend on exactly this VideoView letterbox behavior).
-    // onMeasure below ports VideoView's own algorithm so this view keeps
-    // producing the same box VideoView always did; the inner TextureView is
-    // MATCH_PARENT relative to THIS view, so it automatically fills whatever
-    // (now aspect-correct) box this measures itself to.
     private var videoWidth = 0
     private var videoHeight = 0
 
@@ -74,14 +57,9 @@ class TextureVideoView @JvmOverloads constructor(
     }
 
     init {
-        textureView.surfaceTextureListener = this
-        addView(textureView, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+        surfaceTextureListener = this
     }
 
-    /// Ports android.widget.VideoView#onMeasure verbatim (same branch shape,
-    /// same integer math) so this view's measured size — and therefore where
-    /// the (unaware) FrameLayout parent lands it — is identical to what
-    /// VideoView already produced for the exact same box/creative pair.
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         var width = getDefaultSize(videoWidth, widthMeasureSpec)
         var height = getDefaultSize(videoHeight, heightMeasureSpec)
@@ -92,10 +70,6 @@ class TextureVideoView @JvmOverloads constructor(
             val heightSpecSize = MeasureSpec.getSize(heightMeasureSpec)
 
             if (widthSpecMode == MeasureSpec.EXACTLY && heightSpecMode == MeasureSpec.EXACTLY) {
-                // The parent (the plugin's un-sized FrameLayout, itself sized
-                // by Flutter's platform-view embedding) gave an exact box —
-                // fill it, but correct one dimension against the other so the
-                // creative's own aspect ratio still governs the shape.
                 width = widthSpecSize
                 height = heightSpecSize
                 if (videoWidth * height < width * videoHeight) {
@@ -154,7 +128,7 @@ class TextureVideoView @JvmOverloads constructor(
     }
 
     private fun openVideo() {
-        if (videoUri == null || !isSurfaceReady) return
+        if (videoUri == null) return
         releaseMediaPlayer(keepSurface = true)
         try {
             val mp = MediaPlayer()
@@ -175,10 +149,6 @@ class TextureVideoView @JvmOverloads constructor(
             }
 
             mp.setOnVideoSizeChangedListener { _, width, height ->
-                // Fires once the creative's real dimensions are known (may
-                // race `onPrepared` in either order per MediaPlayer's docs) —
-                // triggers a re-measure so onMeasure's aspect correction has
-                // real numbers instead of the 0x0 default.
                 if (width > 0 && height > 0) {
                     videoWidth = width
                     videoHeight = height
@@ -210,10 +180,9 @@ class TextureVideoView @JvmOverloads constructor(
     override fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture, width: Int, height: Int) {
         surface = Surface(surfaceTexture)
         isSurfaceReady = true
+        mediaPlayer?.setSurface(surface)
         if (videoUri != null && mediaPlayer == null) {
             openVideo()
-        } else if (mediaPlayer != null) {
-            mediaPlayer?.setSurface(surface)
         }
     }
 
@@ -271,9 +240,6 @@ class TextureVideoView @JvmOverloads constructor(
         mediaPlayer = null
         isPrepared = false
         currentState = STATE_IDLE
-        // A new URI gets its own real size from onVideoSizeChanged — don't
-        // let a stale aspect ratio from the PREVIOUS creative govern even one
-        // measure pass of the next one.
         videoWidth = 0
         videoHeight = 0
         if (!keepSurface) {
