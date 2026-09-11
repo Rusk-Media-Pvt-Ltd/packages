@@ -836,7 +836,7 @@ private class InteractiveMediaAdsLibraryPigeonProxyApiBaseCodec(
           logNewInstanceFailure("ViewGroup", value, it.exceptionOrNull())
         }
       }
-    } else if (value is android.widget.VideoView) {
+    } else if (value is dev.flutter.packages.interactive_media_ads.TextureVideoView) {
       registrar.getPigeonApiVideoView().pigeon_newInstance(value) {
         if (it.isFailure) {
           logNewInstanceFailure("VideoView", value, it.exceptionOrNull())
@@ -3902,17 +3902,17 @@ abstract class PigeonApiViewGroup(
 abstract class PigeonApiVideoView(
     open val pigeonRegistrar: InteractiveMediaAdsLibraryPigeonProxyApiRegistrar
 ) {
-  abstract fun pigeon_defaultConstructor(): android.widget.VideoView
+  abstract fun pigeon_defaultConstructor(): dev.flutter.packages.interactive_media_ads.TextureVideoView
 
   /** Sets the URI of the video. */
-  abstract fun setVideoUri(pigeon_instance: android.widget.VideoView, uri: String?)
+  abstract fun setVideoUri(pigeon_instance: dev.flutter.packages.interactive_media_ads.TextureVideoView, uri: String?)
 
   /**
    * The current position of the playing video.
    *
    * In milliseconds.
    */
-  abstract fun getCurrentPosition(pigeon_instance: android.widget.VideoView): Long
+  abstract fun getCurrentPosition(pigeon_instance: dev.flutter.packages.interactive_media_ads.TextureVideoView): Long
 
   /**
    * Sets which type of audio focus will be requested during the playback, or configures playback to
@@ -3921,7 +3921,7 @@ abstract class PigeonApiVideoView(
    * Only available on Android API 26+. Noop on lower versions.
    */
   abstract fun setAudioFocusRequest(
-      pigeon_instance: android.widget.VideoView,
+      pigeon_instance: dev.flutter.packages.interactive_media_ads.TextureVideoView,
       focusGain: AudioManagerAudioFocus
   )
 
@@ -3962,7 +3962,7 @@ abstract class PigeonApiVideoView(
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
-            val pigeon_instanceArg = args[0] as android.widget.VideoView
+            val pigeon_instanceArg = args[0] as dev.flutter.packages.interactive_media_ads.TextureVideoView
             val uriArg = args[1] as String?
             val wrapped: List<Any?> =
                 try {
@@ -3986,7 +3986,7 @@ abstract class PigeonApiVideoView(
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
-            val pigeon_instanceArg = args[0] as android.widget.VideoView
+            val pigeon_instanceArg = args[0] as dev.flutter.packages.interactive_media_ads.TextureVideoView
             val wrapped: List<Any?> =
                 try {
                   listOf(api.getCurrentPosition(pigeon_instanceArg))
@@ -4008,7 +4008,7 @@ abstract class PigeonApiVideoView(
         if (api != null) {
           channel.setMessageHandler { message, reply ->
             val args = message as List<Any?>
-            val pigeon_instanceArg = args[0] as android.widget.VideoView
+            val pigeon_instanceArg = args[0] as dev.flutter.packages.interactive_media_ads.TextureVideoView
             val focusGainArg = args[1] as AudioManagerAudioFocus
             val wrapped: List<Any?> =
                 try {
@@ -4029,7 +4029,7 @@ abstract class PigeonApiVideoView(
   @Suppress("LocalVariableName", "FunctionName")
   /** Creates a Dart instance of VideoView and attaches it to [pigeon_instanceArg]. */
   fun pigeon_newInstance(
-      pigeon_instanceArg: android.widget.VideoView,
+      pigeon_instanceArg: dev.flutter.packages.interactive_media_ads.TextureVideoView,
       callback: (Result<Unit>) -> Unit
   ) {
     if (pigeonRegistrar.ignoreCallsToDart) {
@@ -4050,7 +4050,7 @@ abstract class PigeonApiVideoView(
 
   /** Callback to be invoked when the media source is ready for playback. */
   fun onPrepared(
-      pigeon_instanceArg: android.widget.VideoView,
+      pigeon_instanceArg: dev.flutter.packages.interactive_media_ads.TextureVideoView,
       playerArg: android.media.MediaPlayer,
       callback: (Result<Unit>) -> Unit
   ) {
@@ -4089,7 +4089,7 @@ abstract class PigeonApiVideoView(
 
   /** Callback to be invoked when playback of a media source has completed. */
   fun onCompletion(
-      pigeon_instanceArg: android.widget.VideoView,
+      pigeon_instanceArg: dev.flutter.packages.interactive_media_ads.TextureVideoView,
       playerArg: android.media.MediaPlayer,
       callback: (Result<Unit>) -> Unit
   ) {
@@ -4128,7 +4128,7 @@ abstract class PigeonApiVideoView(
 
   /** Callback to be invoked when there has been an error during an asynchronous operation. */
   fun onError(
-      pigeon_instanceArg: android.widget.VideoView,
+      pigeon_instanceArg: dev.flutter.packages.interactive_media_ads.TextureVideoView,
       playerArg: android.media.MediaPlayer,
       whatArg: Long,
       extraArg: Long,

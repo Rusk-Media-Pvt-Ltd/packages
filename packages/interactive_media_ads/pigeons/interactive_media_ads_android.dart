@@ -731,7 +731,8 @@ abstract class ViewGroup extends View {
 /// See https://developer.android.com/reference/android/widget/VideoView.
 @ProxyApi(
   kotlinOptions: KotlinProxyApiOptions(
-    fullClassName: 'android.widget.VideoView',
+    fullClassName:
+        'dev.flutter.packages.interactive_media_ads.TextureVideoView',
   ),
 )
 abstract class VideoView extends View {
