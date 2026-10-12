@@ -1485,6 +1485,15 @@ class MockVideoView extends _i1.Mock implements _i2.VideoView {
           as _i5.Future<void>);
 
   @override
+  _i5.Future<void> release() =>
+      (super.noSuchMethod(
+            Invocation.method(#release, []),
+            returnValue: _i5.Future<void>.value(),
+            returnValueForMissingStub: _i5.Future<void>.value(),
+          )
+          as _i5.Future<void>);
+
+  @override
   _i5.Future<int> getCurrentPosition() =>
       (super.noSuchMethod(
             Invocation.method(#getCurrentPosition, []),

@@ -64,6 +64,8 @@ void main() {
             required dynamic onError,
             dynamic onPrepared,
             dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) => MockVideoView();
       ima.PigeonOverrides.imaSdkFactory_createAdDisplayContainer =
           (_, __) async {
@@ -142,6 +144,8 @@ void main() {
             required dynamic onError,
             dynamic onPrepared,
             void Function(ima.VideoView, ima.MediaPlayer)? onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) {
             onCompletionCallback = onCompletion!;
             return MockVideoView();
@@ -207,6 +211,8 @@ void main() {
             onError,
             dynamic onPrepared,
             dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) {
             onErrorCallback = onError;
             return MockVideoView();
@@ -277,6 +283,8 @@ void main() {
             dynamic onError,
             Future<void> Function(ima.VideoView, ima.MediaPlayer)? onPrepared,
             dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) {
             onPreparedCallback = onPrepared!;
             final mockVideoView = MockVideoView();
@@ -361,6 +369,8 @@ void main() {
             dynamic onError,
             void Function(ima.VideoView, ima.MediaPlayer)? onPrepared,
             dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) {
             // VideoView.onPrepared returns void, but the implementation uses an
             // async callback method.
@@ -447,6 +457,8 @@ void main() {
             dynamic onError,
             void Function(ima.VideoView, ima.MediaPlayer)? onPrepared,
             dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) {
             // VideoView.onPrepared returns void, but the implementation uses an
             // async callback method.
@@ -535,6 +547,8 @@ void main() {
             dynamic onError,
             void Function(ima.VideoView, ima.MediaPlayer)? onPrepared,
             dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) {
             // VideoView.onPrepared returns void, but the implementation uses an
             // async callback method.
@@ -624,7 +638,13 @@ void main() {
       final mockVideoView = MockVideoView();
       ima.PigeonOverrides.frameLayout_new = () => MockFrameLayout();
       ima.PigeonOverrides.videoView_new =
-          ({dynamic onError, dynamic onPrepared, dynamic onCompletion}) {
+          ({
+            dynamic onError,
+            dynamic onPrepared,
+            dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
+          }) {
             return mockVideoView;
           };
       ima.PigeonOverrides.imaSdkFactory_createAdDisplayContainer =
@@ -674,7 +694,13 @@ void main() {
       var newViewVideoCallCount = 0;
       ima.PigeonOverrides.frameLayout_new = () => mockFrameLayout;
       ima.PigeonOverrides.videoView_new =
-          ({dynamic onError, dynamic onPrepared, dynamic onCompletion}) {
+          ({
+            dynamic onError,
+            dynamic onPrepared,
+            dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
+          }) {
             switch (newViewVideoCallCount) {
               case 0:
                 newViewVideoCallCount++;
@@ -729,7 +755,13 @@ void main() {
       var newViewVideoCallCount = 0;
       ima.PigeonOverrides.frameLayout_new = () => mockFrameLayout;
       ima.PigeonOverrides.videoView_new =
-          ({dynamic onError, dynamic onPrepared, dynamic onCompletion}) {
+          ({
+            dynamic onError,
+            dynamic onPrepared,
+            dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
+          }) {
             switch (newViewVideoCallCount) {
               case 0:
                 newViewVideoCallCount++;
@@ -786,6 +818,8 @@ void main() {
             required dynamic onError,
             dynamic onPrepared,
             dynamic onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) => MockVideoView();
       ima.PigeonOverrides.imaSdkFactory_createAdDisplayContainer =
           (_, __) async {
@@ -887,6 +921,8 @@ void main() {
             dynamic onError,
             dynamic onPrepared,
             void Function(ima.VideoView, ima.MediaPlayer)? onCompletion,
+            dynamic onRenderedFirstFrame,
+            dynamic onBuffering,
           }) {
             onCompletionCallback = onCompletion!;
             return mockVideoView;

@@ -21,6 +21,9 @@ final class AndroidAdDisplayContainerCreationParams
   const AndroidAdDisplayContainerCreationParams({
     super.key,
     required super.onContainerAdded,
+    super.onAdRenderStarted,
+    super.onAdProgress,
+    super.onAdBuffering,
     super.companionSlots,
     @visibleForTesting PlatformViewsServiceProxy? platformViewsProxy,
   }) : _platformViewsProxy =
@@ -36,6 +39,9 @@ final class AndroidAdDisplayContainerCreationParams
     return AndroidAdDisplayContainerCreationParams(
       key: params.key,
       onContainerAdded: params.onContainerAdded,
+      onAdRenderStarted: params.onAdRenderStarted,
+      onAdProgress: params.onAdProgress,
+      onAdBuffering: params.onAdBuffering,
       companionSlots: params.companionSlots,
       platformViewsProxy: platformViewsProxy,
     );
@@ -155,6 +161,11 @@ base class AndroidAdDisplayContainer extends PlatformAdDisplayContainer {
   void _resetStateForNextAd() {
     _stopAdProgressTracking();
 
+    // The player is released explicitly: the native view does not release it
+    // on detach (the platform view is re-created around the same native view
+    // while an ad is prepared), so a dropped ad whose download finishes later
+    // would otherwise start and play audio over whatever replaced it.
+    unawaited(_videoView.release());
     // The `VideoView` is replaced to clear the last frame of the last loaded
     // ad. See https://stackoverflow.com/questions/25660994/clear-video-frame-from-surfaceview-on-video-complete.
     _frameLayout.removeView(_videoView);
@@ -186,6 +197,10 @@ base class AndroidAdDisplayContainer extends PlatformAdDisplayContainer {
           final currentProgress = ima.VideoProgressUpdate(
             currentTimeMs: videoCurrentPosition,
             durationMs: adDuration,
+          );
+          params.onAdProgress?.call(
+            Duration(milliseconds: videoCurrentPosition),
+            Duration(milliseconds: adDuration),
           );
 
           await Future.wait(<Future<void>>[
@@ -260,6 +275,31 @@ base class AndroidAdDisplayContainer extends PlatformAdDisplayContainer {
           for (final ima.VideoAdPlayerCallback callback
               in container.videoAdPlayerCallbacks) {
             callback.onError(container._loadedAdMediaInfoQueue.first);
+          }
+        }
+      },
+      // The native player's first rendered frame after playback was requested:
+      // the exact moment a loader over the ad can come off.
+      onRenderedFirstFrame: (_) {
+        weakThis.target?.params.onAdRenderStarted?.call();
+      },
+      // A stall mid-play. The host gets both edges; the SDK only has a start
+      // (it surfaces it as `AdEventType.adBuffering` and holds its media-load
+      // timeout while the player waits).
+      onBuffering: (_, bool buffering) {
+        final AndroidAdDisplayContainer? container = weakThis.target;
+        if (container == null) {
+          return;
+        }
+        container.params.onAdBuffering?.call(buffering);
+        if (!buffering) {
+          return;
+        }
+        if (container._loadedAdMediaInfoQueue.firstOrNull
+            case final ima.AdMediaInfo loadedAdMediaInfo) {
+          for (final ima.VideoAdPlayerCallback callback
+              in container.videoAdPlayerCallbacks) {
+            callback.onBuffering(loadedAdMediaInfo);
           }
         }
       },

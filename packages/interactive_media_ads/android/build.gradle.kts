@@ -52,6 +52,10 @@ android {
         implementation("androidx.annotation:annotation:1.9.1")
         implementation("androidx.core:core-ktx:1.18.0")
         implementation("com.google.ads.interactivemedia.v3:interactivemedia:3.39.0")
+        // Ad renderer. The host app pins every androidx.media3 artifact to the
+        // same version, so this must match its player.
+        implementation("androidx.media3:media3-exoplayer:1.8.0")
+        implementation("androidx.media3:media3-exoplayer-hls:1.8.0")
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito.kotlin:mockito-kotlin:6.2.3")

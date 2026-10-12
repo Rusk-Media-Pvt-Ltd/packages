@@ -749,8 +749,20 @@ abstract class VideoView extends View {
   /// operation.
   late final void Function(MediaPlayer player, int what, int extra) onError;
 
+  /// Callback to be invoked when the first frame of the current video has been
+  /// rendered to the surface. Fires once per [setVideoUri].
+  late final void Function()? onRenderedFirstFrame;
+
+  /// Callback to be invoked when playback stalls waiting for data (`true`) and
+  /// when it resumes (`false`). Only reported after the video was prepared.
+  late final void Function(bool buffering)? onBuffering;
+
   /// Sets the URI of the video.
   void setVideoUri(String? uri);
+
+  /// Releases the underlying player. The view can be reused with a new
+  /// [setVideoUri] afterwards.
+  void release();
 
   /// The current position of the playing video.
   ///
@@ -772,13 +784,13 @@ abstract class VideoView extends View {
 )
 abstract class View {}
 
-/// MediaPlayer class can be used to control playback of audio/video files and
-/// streams.
+/// Controls playback of the video loaded into a [VideoView].
 ///
-/// See https://developer.android.com/reference/android/media/MediaPlayer.
+/// Backed by a media3 ExoPlayer wrapped to keep the MediaPlayer-shaped
+/// surface the Dart side drives.
 @ProxyApi(
   kotlinOptions: KotlinProxyApiOptions(
-    fullClassName: 'android.media.MediaPlayer',
+    fullClassName: 'dev.flutter.packages.interactive_media_ads.AdMediaPlayer',
   ),
 )
 abstract class MediaPlayer {

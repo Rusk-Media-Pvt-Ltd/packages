@@ -46,6 +46,9 @@ base class PlatformAdDisplayContainerCreationParams {
   const PlatformAdDisplayContainerCreationParams({
     this.key,
     required this.onContainerAdded,
+    this.onAdRenderStarted,
+    this.onAdProgress,
+    this.onAdBuffering,
     this.layoutDirection = TextDirection.ltr,
     this.companionSlots = const <PlatformCompanionAdSlot>[],
   });
@@ -59,6 +62,22 @@ base class PlatformAdDisplayContainerCreationParams {
   /// Invoked when the View that contains the ad has been added to the platform
   /// view hierarchy.
   final void Function(PlatformAdDisplayContainer container) onContainerAdded;
+
+  /// Invoked when the first frame of the current creative is on screen and
+  /// playback has begun, once per play or resume. On Android this precedes
+  /// the IMA SDK's own `started` event, which lags the first frame by up to a
+  /// few seconds. Never invoked on platforms that do not report it.
+  final void Function()? onAdRenderStarted;
+
+  /// Invoked with the player's real playhead while the current creative is
+  /// playing, at the platform's progress-polling rate (250 ms on Android).
+  /// Never invoked on platforms that do not report it.
+  final void Function(Duration position, Duration duration)? onAdProgress;
+
+  /// Invoked with `true` when the player of the current creative stalls for
+  /// data after it was prepared, and `false` when it resumes. Never invoked on
+  /// platforms that do not report it.
+  final void Function(bool buffering)? onAdBuffering;
 
   /// The layout direction to use for the embedded AdDisplayContainer.
   final TextDirection layoutDirection;

@@ -5,43 +5,48 @@
 package dev.flutter.packages.interactive_media_ads
 
 import android.media.AudioManager
-import android.net.Uri
-import android.widget.VideoView
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import org.mockito.kotlin.isNotNull
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 class VideoViewProxyApiTest {
   @Test
-  fun setVideoURI() {
+  fun setVideoUri() {
     val api = TestProxyApiRegistrar().getPigeonApiVideoView()
 
-    val instance = mock<VideoView>()
-    api.setVideoUri(instance, "adTag")
+    val instance = mock<TextureVideoView>()
+    api.setVideoUri(instance, "https://example.com/ad.m3u8")
 
-    verify(instance).setVideoURI(isNotNull())
-    assertEquals("adTag", Uri.lastValue)
+    verify(instance).setVideoUri("https://example.com/ad.m3u8")
   }
 
   @Test
   fun getCurrentPosition() {
     val api = TestProxyApiRegistrar().getPigeonApiVideoView()
 
-    val instance = mock<VideoView>()
-    whenever(instance.currentPosition).thenReturn(0)
-    api.getCurrentPosition(instance)
+    val instance = mock<TextureVideoView>()
+    whenever(instance.getCurrentPosition()).thenReturn(1250L)
 
-    assertEquals(0, api.getCurrentPosition(instance))
+    assertEquals(1250L, api.getCurrentPosition(instance))
+  }
+
+  @Test
+  fun release() {
+    val api = TestProxyApiRegistrar().getPigeonApiVideoView()
+
+    val instance = mock<TextureVideoView>()
+    api.release(instance)
+
+    verify(instance).release()
   }
 
   @Test
   fun setAudioFocusRequest() {
     val api = TestProxyApiRegistrar().getPigeonApiVideoView()
 
-    val instance = mock<VideoView>()
+    val instance = mock<TextureVideoView>()
     api.setAudioFocusRequest(instance, AudioManagerAudioFocus.GAIN)
 
     verify(instance).setAudioFocusRequest(AudioManager.AUDIOFOCUS_GAIN)

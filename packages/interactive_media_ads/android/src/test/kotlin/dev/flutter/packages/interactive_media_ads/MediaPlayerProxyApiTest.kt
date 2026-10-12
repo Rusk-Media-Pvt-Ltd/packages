@@ -4,7 +4,6 @@
 
 package dev.flutter.packages.interactive_media_ads
 
-import android.media.MediaPlayer
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import org.mockito.kotlin.mock
@@ -16,27 +15,27 @@ class MediaPlayerProxyApiTest {
   fun getDuration() {
     val api = TestProxyApiRegistrar().getPigeonApiMediaPlayer()
 
-    val instance = mock<MediaPlayer>()
-    whenever(instance.duration).thenReturn(0)
+    val instance = mock<AdMediaPlayer>()
+    whenever(instance.duration).thenReturn(10_000L)
 
-    assertEquals(0, api.getDuration(instance))
+    assertEquals(10_000L, api.getDuration(instance))
   }
 
   @Test
   fun seekTo() {
     val api = TestProxyApiRegistrar().getPigeonApiMediaPlayer()
 
-    val instance = mock<MediaPlayer>()
-    api.seekTo(instance, 0)
+    val instance = mock<AdMediaPlayer>()
+    api.seekTo(instance, 500L)
 
-    verify(instance).seekTo(0)
+    verify(instance).seekTo(500L)
   }
 
   @Test
   fun start() {
     val api = TestProxyApiRegistrar().getPigeonApiMediaPlayer()
 
-    val instance = mock<MediaPlayer>()
+    val instance = mock<AdMediaPlayer>()
     api.start(instance)
 
     verify(instance).start()
@@ -46,7 +45,7 @@ class MediaPlayerProxyApiTest {
   fun pause() {
     val api = TestProxyApiRegistrar().getPigeonApiMediaPlayer()
 
-    val instance = mock<MediaPlayer>()
+    val instance = mock<AdMediaPlayer>()
     api.pause(instance)
 
     verify(instance).pause()
@@ -56,7 +55,7 @@ class MediaPlayerProxyApiTest {
   fun stop() {
     val api = TestProxyApiRegistrar().getPigeonApiMediaPlayer()
 
-    val instance = mock<MediaPlayer>()
+    val instance = mock<AdMediaPlayer>()
     api.stop(instance)
 
     verify(instance).stop()

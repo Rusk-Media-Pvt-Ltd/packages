@@ -5,26 +5,26 @@
 package dev.flutter.packages.interactive_media_ads
 
 import android.media.AudioManager
-import android.media.MediaPlayer
 import android.os.Build
 
 /**
  * ProxyApi implementation for [TextureVideoView].
  *
- * <p>This class handles instantiating [TextureVideoView] native object instances that are attached to a Dart
- * instance and handling method calls on the associated native class.
+ * <p>This class handles instantiating [TextureVideoView] native object instances that are attached
+ * to a Dart instance and handling method calls on the associated native class.
  */
 class VideoViewProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) :
     PigeonApiVideoView(pigeonRegistrar) {
 
   override fun pigeon_defaultConstructor(): TextureVideoView {
     val instance = TextureVideoView(pigeonRegistrar.context)
-    instance.setOnPreparedListener { player: MediaPlayer -> onPrepared(instance, player) {} }
-    instance.setOnErrorListener { player: MediaPlayer, what: Int, extra: Int ->
+    instance.setOnPreparedListener { player: AdMediaPlayer -> onPrepared(instance, player) {} }
+    instance.setOnErrorListener { player: AdMediaPlayer, what: Int, extra: Int ->
       onError(instance, player, what.toLong(), extra.toLong()) {}
-      true
     }
-    instance.setOnCompletionListener { player: MediaPlayer -> onCompletion(instance, player) {} }
+    instance.setOnCompletionListener { player: AdMediaPlayer -> onCompletion(instance, player) {} }
+    instance.setOnRenderedFirstFrameListener { onRenderedFirstFrame(instance) {} }
+    instance.setOnBufferingListener { buffering: Boolean -> onBuffering(instance, buffering) {} }
     return instance
   }
 
@@ -36,7 +36,14 @@ class VideoViewProxyApi(override val pigeonRegistrar: ProxyApiRegistrar) :
     return pigeon_instance.getCurrentPosition()
   }
 
-  override fun setAudioFocusRequest(pigeon_instance: TextureVideoView, focusGain: AudioManagerAudioFocus) {
+  override fun release(pigeon_instance: TextureVideoView) {
+    pigeon_instance.release()
+  }
+
+  override fun setAudioFocusRequest(
+      pigeon_instance: TextureVideoView,
+      focusGain: AudioManagerAudioFocus
+  ) {
     if (pigeonRegistrar.sdkIsAtLeast(Build.VERSION_CODES.O)) {
       pigeon_instance.setAudioFocusRequest(
           when (focusGain) {

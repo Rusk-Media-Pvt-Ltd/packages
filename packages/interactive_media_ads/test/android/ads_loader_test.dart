@@ -412,8 +412,13 @@ Future<AndroidAdDisplayContainer> _pumpAdDisplayContainer(
 }) async {
   ima.PigeonOverrides.frameLayout_new = () => MockFrameLayout();
   ima.PigeonOverrides.videoView_new =
-      ({required dynamic onError, dynamic onPrepared, dynamic onCompletion}) =>
-          MockVideoView();
+      ({
+        required dynamic onError,
+        dynamic onPrepared,
+        dynamic onCompletion,
+        dynamic onRenderedFirstFrame,
+        dynamic onBuffering,
+      }) => MockVideoView();
   ima.PigeonOverrides.imaSdkFactory_createAdDisplayContainer = (_, __) async {
     return MockAdDisplayContainer();
   };

@@ -37,6 +37,9 @@ class AdDisplayContainer extends StatelessWidget {
   AdDisplayContainer({
     Key? key,
     required void Function(AdDisplayContainer container) onContainerAdded,
+    void Function()? onAdRenderStarted,
+    void Function(Duration position, Duration duration)? onAdProgress,
+    void Function(bool buffering)? onAdBuffering,
     Iterable<CompanionAdSlot> companionSlots = const <CompanionAdSlot>[],
     TextDirection layoutDirection = TextDirection.ltr,
   }) : this.fromPlatformCreationParams(
@@ -47,6 +50,9 @@ class AdDisplayContainer extends StatelessWidget {
                AdDisplayContainer.fromPlatform(platform: container),
              );
            },
+           onAdRenderStarted: onAdRenderStarted,
+           onAdProgress: onAdProgress,
+           onAdBuffering: onAdBuffering,
            companionSlots: companionSlots.map(
              (CompanionAdSlot slot) => slot.platform,
            ),
