@@ -221,10 +221,6 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     private const val MAX_VIDEO_HEIGHT = 720
     private const val MAX_VIDEO_BITRATE = 3_000_000
 
-    // Floor: 144p is never selected, so the cold-start pick lands on 240p (Vivek, run 14). On a
-    // link that cannot carry 240p the ad stalls there rather than dropping further.
-    private const val MIN_VIDEO_HEIGHT = 240
-
     // What the HLS ladder's first segment is chosen against, before a byte has been measured. The
     // content player's meter is not consulted (device 2026-10-09: it read 8-90 Mbps on 300-2000 kbps
     // links). Cellular and unknown links start on the 360p rung so the first segment arrives fast;
@@ -379,8 +375,7 @@ constructor(context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
           trackSelector
               .buildUponParameters()
               .setMaxVideoSize(MAX_VIDEO_WIDTH, MAX_VIDEO_HEIGHT)
-              .setMaxVideoBitrate(MAX_VIDEO_BITRATE)
-              .setMinVideoSize(/* minVideoWidth= */ 0, MIN_VIDEO_HEIGHT))
+              .setMaxVideoBitrate(MAX_VIDEO_BITRATE))
       val player =
           ExoPlayer.Builder(context)
               .setBandwidthMeter(ColdStartBandwidthMeter(bandwidthMeter(context)))
